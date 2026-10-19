@@ -48,7 +48,7 @@ def translate_all(out):
     todo = [t for t in texts if t not in cache]
     # По одной строке на запрос: пакетный перевод иногда сдвигает строки,
     # и описание уезжает к чужой передаче. Благодаря кэшу новых строк за запуск немного.
-    with ThreadPoolExecutor(8) as ex:
+    with ThreadPoolExecutor(4) as ex:
         for src, ru in zip(todo, ex.map(_gtx, todo)):
             if ru:
                 cache[src] = ru

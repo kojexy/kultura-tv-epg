@@ -29,6 +29,7 @@ FOREIGN = {
 CACHE = "translations.json"
 
 def _gtx(text):
+    """Бесплатный веб-переводчик Google; при ошибке возвращает None и текст остаётся как есть."""
     url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ru&dt=t"
     body = urllib.parse.urlencode({"q": text}).encode()
     for attempt in range(3):
@@ -41,36 +42,16 @@ def _gtx(text):
             time.sleep(2 * (attempt + 1))
     return None
 
-def translate_batch(texts):
-    """Переводит пачку строк одним запросом: строки склеиваются через перевод строки.
-    Если число строк в ответе не совпало, переводим по одной."""
-    joined = _gtx("\n".join(texts))
-    lines = joined.split("\n") if joined else []
-    if len(lines) == len(texts):
-        return [l.strip() for l in lines]
-    return [_gtx(t) for t in texts]
-
-def batches(items, limit=3500):
-    cur, size = [], 0
-    for t in items:
-        if cur and size + len(t) > limit:
-            yield cur
-            cur, size = [], 0
-        cur.append(t)
-        size += len(t) + 1
-    if cur:
-        yield cur
-
 def translate_all(out):
     cache = json.load(open(CACHE, encoding="utf-8")) if os.path.exists(CACHE) else {}
     texts = {x[k] for ch in FOREIGN for x in out.get(ch, []) for k in ("t", "d") if k in x}
     todo = [t for t in texts if t not in cache]
-    chunks = list(batches(todo))
-    with ThreadPoolExecutor(3) as ex:
-        for chunk, result in zip(chunks, ex.map(translate_batch, chunks)):
-            for src, ru in zip(chunk, result):
-                if ru:
-                    cache[src] = ru
+    # По одной строке на запрос: пакетный перевод иногда сдвигает строки,
+    # и описание уезжает к чужой передаче. Благодаря кэшу новых строк за запуск немного.
+    with ThreadPoolExecutor(8) as ex:
+        for src, ru in zip(todo, ex.map(_gtx, todo)):
+            if ru:
+                cache[src] = ru
     for ch in FOREIGN:
         for x in out.get(ch, []):
             if x["t"] in cache and cache[x["t"]] != x["t"]:

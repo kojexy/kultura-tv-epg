@@ -52,6 +52,12 @@ def translate_all(out):
         for src, ru in zip(todo, ex.map(_gtx, todo)):
             if ru:
                 cache[src] = ru
+    # Google иногда отвечает отказом на частые запросы; пропущенное добираем медленно, по одному.
+    for src in [t for t in todo if t not in cache][:200]:
+        time.sleep(1.5)
+        ru = _gtx(src)
+        if ru:
+            cache[src] = ru
     for ch in FOREIGN:
         for x in out.get(ch, []):
             if x["t"] in cache and cache[x["t"]] != x["t"]:

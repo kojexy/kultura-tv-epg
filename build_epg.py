@@ -27,6 +27,13 @@ CHANNELS = {
     # Остальной мир
     "cgtn", "cctv4", "nhk-world", "arirang", "deutsche-welle-ru", "deutsche-welle-eu", "euronews",
     "france24-fr", "france24-en", "trt-1-hd", "trt-muzik-tr",
+    # Мир (из проверенной таблицы каналов)
+    "abaitv", "abc-news-live-us", "arte-hd", "aztv", "balapan", "bbc",
+    "bloomberg", "curiosity-stream", "dunyo-uz", "etv-ee", "etv-plus-ee", "etv2-ee",
+    "h1-am", "kazakh-tv", "kazakhstan", "kbs-world", "kultura-ua", "lrt-kultura",
+    "lrt-lituanica", "lrt-tv", "ltv1", "ltv7", "medeniyyet", "ozbekiston24-uz",
+    "rada-ua", "rai-news-it", "stingray-classica", "stingray-djazz", "stingray-qello", "trt-2-hd",
+    "trt-avaz", "trt-cocuk-tr", "trt-haber-hd", "tv5-monde", "tvri", "ua-tv",
 }
 # epg.pw: каналы CCTV, CGTN Documentary и провинциальные каналы Китая.
 PW_CHANNELS = {
